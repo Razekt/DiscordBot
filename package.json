@@ -1,0 +1,27 @@
+{
+  "name": "discordbot",
+  "version": "1.0.0",
+  "description": "RR Music",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "discordbot"
+  },
+  "keywords": [
+    "discord",
+    "bot"
+  ],
+  "author": "Silvio",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/opus": "^0.3.2",
+    "discord.js": "^12.3.1",
+    "ffmpeg": "0.0.4",
+    "ffmpeg-static": "^4.2.7",
+    "opusscript": "0.0.7",
+    "ytdl-core": "^3.2.2"
+  }
+}
