@@ -1,7 +1,7 @@
 const discord = require("discord.js");
 const fs = require("fs");
 const ytdl = require("ytdl-core");
-const config = require("./config.json");
+require('dotenv').config();
 
 const client = new discord.Client();
 const prefix = '?';
@@ -18,6 +18,7 @@ var server = {};
 var f;
 var i = 0;
 var repeat = "0";
+var vol;
 
 async function addSong(connection, message, args) {
 	if (!ytdl.validateURL(args[0])) {
@@ -39,14 +40,13 @@ async function addSong(connection, message, args) {
 }
 
 async function play(connection, message, track) {
-	let vol = f.dispatcher.volume;
+	if (vol)
+		f.dispatcher.setVolume(vol);
+
 	if (track)
 		i = track;
 
 	f.dispatcher = connection.play(ytdl(f.queue[i].url, { filter: "audioonly" }));
-
-	if (vol)
-		f.dispatcher.setVolume(vol);
 
 	i++;
 	f.dispatcher.on("finish", function () {
@@ -67,23 +67,18 @@ async function play(connection, message, track) {
 }
 
 async function playSpecial(connection, message) {
-	let vol = f.dispatcher.volume;
-	repeat = "1";
-	f.dispatcher = connection.play(f.queue[0]);
-
 	if (vol)
 		f.dispatcher.setVolume(vol);
+	
+	repeat = "1";
+	f.dispatcher = connection.play(f.queue[0]);
 
 	f.dispatcher.on("finish", function () {
 		playSpecial(connection, message);
 	})
 }
 
-client.once('ready', () => {
-	console.log('RR está online!');
-});
-
-client.on('message', message => {
+async function main(message) {
 	if(!message.content.startsWith(prefix) || message.author.bot) return;
 
 	const args = message.content.slice(prefix.length).split(/\s+/);
@@ -157,19 +152,41 @@ client.on('message', message => {
 			else
 				return;
 			break;
+		
+		case 'stats':
+			let msg = {
+				title: "Estatísticas",
+				fields: [
+					{ name: "Volume", value: (f === undefined ? "0" : f.dispatcher.volume * 100) + "%", inline: true },
+					{ name: "Repetidor", value: repeat, inline: true }
+				]
+			}
+			message.channel.send({ embed: msg });
+			break;
 
+		case 'vol':
+			if (f) {
+				f.dispatcher.setVolume(parseInt(args[0]) / 100);
+				vol = f.dispatcher.volume;
+			}
+			break;
+		
 		default:
 			try {
-				client.commands.get(command).execute(message, args, f);
+				if (client.commands.get(command))
+					client.commands.get(command).execute(message, args, f);
 			}
 			catch (e) {
 				console.log(e);
 			}
 			break;
     }
-});
+}
 
-client.login(config.Discord);
+
+client.once('ready', () => { console.log('RR está online!') });
+client.on('message', main);
+client.login(process.env.DISCORD_API_KEY);
 
 /*
    Link para adicionar o BOT.
