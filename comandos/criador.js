@@ -1,7 +1,7 @@
 module.exports = {
 	name: 'criador',
 	description: "Sim sou eu",
-	execute(message, args, f){
+	execute(message, args){
 		/*	Comandos de permissão
 			let role = message.guild.roles.cache.find(r => r.name === "Bot"); ==> Armazena em uma variável o role em uma pesquisa por nome.
 			message.member.roles.cache.has(roleID); ==> Para verificar se a pessoa possuí permissão no Discord.

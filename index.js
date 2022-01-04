@@ -1,13 +1,11 @@
-const discord = require('discord.js');
+const Discord = require('discord.js');
 const commandHandler = require('./commandHandler');
 require('dotenv').config();
 
-const client = new discord.Client();
-
-
+const client = new Discord.Client();
+client.login(process.env.DISCORD_API_KEY);
 client.once('ready', () => { console.log('RR está online!') });
 client.on('message', commandHandler);
-client.login(process.env.DISCORD_API_KEY);
 
 /*
    Link para adicionar o BOT.
